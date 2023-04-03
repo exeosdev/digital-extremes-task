@@ -13,18 +13,6 @@
 static PathNodes sPathNodes;
 static PowerUps sPowerUps;
 
-bool FindPowerUp(PathNodes& path, PowerUpType mType, PathNode *start)
-{
-    /* Example:
-    path.push_back(start);
-    path.push_back(secondNode);
-    path.push_back(endNode);
-    return(true);
-    */
-    
-    return(false); // No path found.
-}
-
 int main(int, char*[])
 {
     sPathNodes.emplace_back(new PathNode("Node0", Vertex(300, 60, 0)));
@@ -47,23 +35,22 @@ int main(int, char*[])
     LinkNodes(sPathNodes[3], sPathNodes[5]);
 
     sPowerUps.emplace_back(new Weapon("Weapon0", Vertex(340, 670, 0)));
-    sPathNodes[3]->AddPowerUp(sPowerUps[0]);    
+    sPathNodes[3]->AddPowerUp(sPowerUps[0].get());
     sPowerUps.emplace_back(new Weapon("Weapon1", Vertex(500, 220, 0)));
-    sPathNodes[7]->AddPowerUp(sPowerUps[1]);    
+    sPathNodes[7]->AddPowerUp(sPowerUps[1].get());
 
     sPowerUps.emplace_back(new Health("Health0", Vertex(490, 10, 0)));
-    sPathNodes[6]->AddPowerUp(sPowerUps[2]);    
+    sPathNodes[6]->AddPowerUp(sPowerUps[2].get());
     sPowerUps.emplace_back(new Health("Health1", Vertex(120, 20, 0)));
-    sPathNodes[1]->AddPowerUp(sPowerUps[3]);    
+    sPathNodes[1]->AddPowerUp(sPowerUps[3].get());
 
     sPowerUps.emplace_back(new Armor("Armour0", Vertex(500, 360, 0)));
-    sPathNodes[5]->AddPowerUp(sPowerUps[4]);    
+    sPathNodes[5]->AddPowerUp(sPowerUps[4].get());
     sPowerUps.emplace_back(new Armor("Armour1", Vertex(180, 525, 0)));
-    sPathNodes[2]->AddPowerUp(sPowerUps[5]);    
+    sPathNodes[2]->AddPowerUp(sPowerUps[5].get());
 
-    PathNodes path;
-
-    if(!FindPowerUp(path, PowerUp::WEAPON, sPathNodes[4]))
+	const auto path = FindPowerUp(PowerUpType::WEAPON, sPathNodes[4].get());
+    if(path.empty())
     {
         printf("No path found: IMPOSSIBLE!\n");
     }
@@ -71,7 +58,7 @@ int main(int, char*[])
     {
         printf("Path found: ");
 
-        for(PathNodes::iterator i = path.begin(); i != path.end(); ++i)
+        for(auto i = path.begin(); i != path.end(); ++i)
         {
             PathNode *n = *i;
             printf("%s ", n->GetName());

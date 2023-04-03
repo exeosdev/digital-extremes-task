@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+enum class PowerUpType : uint32_t;
+
 class PathNode;
 using PathNodePtr = std::unique_ptr<PathNode>;
 
@@ -33,6 +35,13 @@ public:
     void RemoveLink(PathNode *pathNode);
     void AddPowerUp(PowerUp *powerUp);
     void RemovePowerUp(PowerUp *powerUp);
+
+	[[nodiscard]] bool HasPowerUp(PowerUpType puType) const;
+
+    [[nodiscard]] Vertex GetPosition() const
+    {
+        return mPosition;
+    }
 
     [[nodiscard]] const char* GetName() const
     {
@@ -70,5 +79,17 @@ inline void LinkNodes(PathNodePtr &n1, PathNodePtr &n2)
 	n1->AddLink(n2.get());
 	n2->AddLink(n1.get());
 }
+
+#include <unordered_set>
+
+using NodeMarkupTable = std::unordered_set<PathNode *>;
+
+struct PathState
+{
+	PathNodeRefs path;
+	float pathLength = 0.0f;
+};
+
+PathNodeRefs FindPowerUp(PowerUpType mType, PathNode *start);
 
 #endif // PATH_NODE_H
