@@ -7,6 +7,9 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <unordered_set>
+#include <limits>
+
 
 enum class PowerUpType : uint32_t;
 
@@ -38,6 +41,8 @@ public:
 
 	[[nodiscard]] bool HasPowerUp(PowerUpType puType) const;
 
+	[[nodiscard]] float GetClosestPowerUpDistanceOfType(PowerUpType puType) const;
+
     [[nodiscard]] Vertex GetPosition() const
     {
         return mPosition;
@@ -48,9 +53,26 @@ public:
         return mName.c_str();
     }
 
+	// Returns the link with the specified index
+	[[nodiscard]] PathNode * GetLink(size_t index) const
+    {
+        return mLinks[index];
+    }
+
+	// Returns true if the specified link index is valid
+	[[nodiscard]] bool CheckLinkIndex(size_t index) const
+    {
+        return index < mLinks.size();
+    }
+
 	[[nodiscard]] const PathNodeRefs& GetLinks() const
     {
         return mLinks;
+    }
+
+	[[nodiscard]] bool Empty() const
+    {
+        return mLinks.size() == 1;
     }
 
 	[[nodiscard]] const PowerUpRefs& GetPowerUps() const
@@ -80,16 +102,20 @@ inline void LinkNodes(PathNodePtr &n1, PathNodePtr &n2)
 	n2->AddLink(n1.get());
 }
 
-#include <unordered_set>
+struct PathInfo
+{
+	PathNodeRefs pathNodes;
+	float pathLength = std::numeric_limits<float>::max();
+
+	explicit operator bool() const noexcept
+	{
+		return !pathNodes.empty();
+	}
+};
 
 using NodeMarkupTable = std::unordered_set<PathNode *>;
 
-struct PathState
-{
-	PathNodeRefs path;
-	float pathLength = 0.0f;
-};
-
-PathNodeRefs FindPowerUp(PowerUpType mType, PathNode *start);
+PathInfo FindPowerUp(PowerUpType puType, PathNode *start);
+void PrintPath(const PathInfo &path, const char *desc = nullptr);
 
 #endif // PATH_NODE_H

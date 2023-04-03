@@ -3,69 +3,86 @@
 #include "Weapon.h"
 #include "Health.h"
 #include "Armor.h"
-#include <cstdio>
-
-// Not sure about these statics (i.e. whether that's an intention or should be classified as a wrong design).
-// Let's assume we have a global "library" of Power Ups in the world and all paths for a map stored here, accessible
-// from various parts of the game logic. That (kinda) justifies this approach. We'll proceed assuming it's okay.
-// A note: since we stick to the idea of having these as static globals, we have a guarantee that the destruction will
-// happen after main() quits - so there is no way (detached threads aside) to access a deleted node/power-up.
-static PathNodes sPathNodes;
-static PowerUps sPowerUps;
 
 int main(int, char*[])
 {
-    sPathNodes.emplace_back(new PathNode("Node0", Vertex(300, 60, 0)));
-    sPathNodes.emplace_back(new PathNode("Node1", Vertex(100, 60, 0)));
-    sPathNodes.emplace_back(new PathNode("Node2", Vertex(80, 560, 0)));
-    sPathNodes.emplace_back(new PathNode("Node3", Vertex(280, 650, 0)));
-    sPathNodes.emplace_back(new PathNode("Node4", Vertex(300, 250, 0)));
-    sPathNodes.emplace_back(new PathNode("Node5", Vertex(450, 400, 0)));
-    sPathNodes.emplace_back(new PathNode("Node6", Vertex(450, 60, 0)));
-    sPathNodes.emplace_back(new PathNode("Node7", Vertex(450, 400, 0)));
+	{
+		PathNodes sPathNodesDefault;
+		PowerUps sPowerUpsDefault;
 
-    LinkNodes(sPathNodes[1], sPathNodes[4]);
-    LinkNodes(sPathNodes[0], sPathNodes[1]);
-    LinkNodes(sPathNodes[0], sPathNodes[6]);
-    LinkNodes(sPathNodes[0], sPathNodes[4]);
-    LinkNodes(sPathNodes[7], sPathNodes[4]);
-    LinkNodes(sPathNodes[7], sPathNodes[5]);
-    LinkNodes(sPathNodes[2], sPathNodes[4]);
-    LinkNodes(sPathNodes[2], sPathNodes[3]);
-    LinkNodes(sPathNodes[3], sPathNodes[5]);
+		sPathNodesDefault.emplace_back(new PathNode("Node0", Vertex(300, 60, 0)));
+		sPathNodesDefault.emplace_back(new PathNode("Node1", Vertex(100, 60, 0)));
+		sPathNodesDefault.emplace_back(new PathNode("Node2", Vertex(80, 560, 0)));
+		sPathNodesDefault.emplace_back(new PathNode("Node3", Vertex(280, 650, 0)));
+		sPathNodesDefault.emplace_back(new PathNode("Node4", Vertex(300, 250, 0)));
+		sPathNodesDefault.emplace_back(new PathNode("Node5", Vertex(450, 400, 0)));
+		sPathNodesDefault.emplace_back(new PathNode("Node6", Vertex(450, 60, 0)));
+		sPathNodesDefault.emplace_back(new PathNode("Node7", Vertex(450, 400, 0)));
 
-    sPowerUps.emplace_back(new Weapon("Weapon0", Vertex(340, 670, 0)));
-    sPathNodes[3]->AddPowerUp(sPowerUps[0].get());
-    sPowerUps.emplace_back(new Weapon("Weapon1", Vertex(500, 220, 0)));
-    sPathNodes[7]->AddPowerUp(sPowerUps[1].get());
+		LinkNodes(sPathNodesDefault[1], sPathNodesDefault[4]);
+		LinkNodes(sPathNodesDefault[0], sPathNodesDefault[1]);
+		LinkNodes(sPathNodesDefault[0], sPathNodesDefault[6]);
+		LinkNodes(sPathNodesDefault[0], sPathNodesDefault[4]);
+		LinkNodes(sPathNodesDefault[7], sPathNodesDefault[4]);
+		LinkNodes(sPathNodesDefault[7], sPathNodesDefault[5]);
+		LinkNodes(sPathNodesDefault[2], sPathNodesDefault[4]);
+		LinkNodes(sPathNodesDefault[2], sPathNodesDefault[3]);
+		LinkNodes(sPathNodesDefault[3], sPathNodesDefault[5]);
 
-    sPowerUps.emplace_back(new Health("Health0", Vertex(490, 10, 0)));
-    sPathNodes[6]->AddPowerUp(sPowerUps[2].get());
-    sPowerUps.emplace_back(new Health("Health1", Vertex(120, 20, 0)));
-    sPathNodes[1]->AddPowerUp(sPowerUps[3].get());
+		sPowerUpsDefault.emplace_back(new Weapon("Weapon0", Vertex(340, 670, 0)));
+		sPathNodesDefault[3]->AddPowerUp(sPowerUpsDefault[0].get());
+		sPowerUpsDefault.emplace_back(new Weapon("Weapon1", Vertex(500, 220, 0)));
+		sPathNodesDefault[7]->AddPowerUp(sPowerUpsDefault[1].get());
 
-    sPowerUps.emplace_back(new Armor("Armour0", Vertex(500, 360, 0)));
-    sPathNodes[5]->AddPowerUp(sPowerUps[4].get());
-    sPowerUps.emplace_back(new Armor("Armour1", Vertex(180, 525, 0)));
-    sPathNodes[2]->AddPowerUp(sPowerUps[5].get());
+		sPowerUpsDefault.emplace_back(new Health("Health0", Vertex(490, 10, 0)));
+		sPathNodesDefault[6]->AddPowerUp(sPowerUpsDefault[2].get());
+		sPowerUpsDefault.emplace_back(new Health("Health1", Vertex(120, 20, 0)));
+		sPathNodesDefault[1]->AddPowerUp(sPowerUpsDefault[3].get());
 
-	const auto path = FindPowerUp(PowerUpType::WEAPON, sPathNodes[4].get());
-    if(path.empty())
-    {
-        printf("No path found: IMPOSSIBLE!\n");
-    }
-    else
-    {
-        printf("Path found: ");
+		sPowerUpsDefault.emplace_back(new Armor("Armour0", Vertex(500, 360, 0)));
+		sPathNodesDefault[5]->AddPowerUp(sPowerUpsDefault[4].get());
+		sPowerUpsDefault.emplace_back(new Armor("Armour1", Vertex(180, 525, 0)));
+		sPathNodesDefault[2]->AddPowerUp(sPowerUpsDefault[5].get());
 
-        for(auto i = path.begin(); i != path.end(); ++i)
-        {
-            PathNode *n = *i;
-            printf("%s ", n->GetName());
-        }
+		// The original test
+		const auto path = FindPowerUp(PowerUpType::WEAPON, sPathNodesDefault[4].get());
+		PrintPath(path, "The Original Example");
+	}
 
-        printf("\n");
-    }
+	{
+		// Single node graph, no PU
+		PathNodes sPathNodesSingleNode;
+		sPathNodesSingleNode.emplace_back(new PathNode("Node0", Vertex(300, 60, 0)));
+		const auto path = FindPowerUp(PowerUpType::WEAPON, sPathNodesSingleNode[0].get());
+		PrintPath(path, "Single Node Graph/No PU");
+	}
+
+	{
+		// Single node graph, with PU
+		PathNodes sPathNodesSingleNode2;
+		PowerUps sPowerUpsSingleNode2;
+		sPathNodesSingleNode2.emplace_back(new PathNode("Node0", Vertex(300, 60, 0)));
+		sPowerUpsSingleNode2.emplace_back(new Weapon("Weapon0", Vertex(340, 670, 0)));
+		sPathNodesSingleNode2[0]->AddPowerUp(sPowerUpsSingleNode2[0].get());
+		const auto path = FindPowerUp(PowerUpType::WEAPON, sPathNodesSingleNode2[0].get());
+		PrintPath(path, "Single Node Graph/With PU");
+	}
+
+	{
+		// Two identical nodes, one with PU
+		PathNodes sPathNodesCycle;
+		PowerUps sPowerUpsCycle;
+		sPathNodesCycle.emplace_back(new PathNode("Node0", Vertex(300, 60, 0)));
+		sPathNodesCycle.emplace_back(new PathNode("Node1", Vertex(300, 60, 0)));
+		LinkNodes(sPathNodesCycle[0], sPathNodesCycle[1]);
+		sPowerUpsCycle.emplace_back(new Weapon("Weapon0", Vertex(340, 670, 0)));
+		//sPathNodesCycle[0]->AddPowerUp(sPowerUpsCycle[0].get());
+		sPathNodesCycle[1]->AddPowerUp(sPowerUpsCycle[0].get());
+		const auto path1 = FindPowerUp(PowerUpType::WEAPON, sPathNodesCycle[0].get());
+		PrintPath(path1, "Two Identical/Start on Empty");
+		const auto path2 = FindPowerUp(PowerUpType::WEAPON, sPathNodesCycle[1].get());
+		PrintPath(path2, "Two Identical/Start on PU");
+	}
        
-    return(0);
+    return 0;
 }
