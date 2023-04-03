@@ -6,14 +6,14 @@
 class Health : public PowerUp
 {
 public:
-    Health(const char* name, Vertex position) :
-        PowerUp(name, position)
-    {
-        mType = HEALTH;
-    }
-    
+    Health(const char* name, Vertex position)
+	: PowerUp(name, position, PowerUpType::HEALTH)
+    {}
+
+	virtual ~Health() = default;
+
 protected:
-    float healing;
+    float healing = 0.0f;
 };
 
 #endif // HEALTH_H

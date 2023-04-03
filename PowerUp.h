@@ -2,44 +2,42 @@
 #define POWER_UP_H
 
 #include "Vertex.h"
-#include <string.h>
+#include <string>
+#include <unordered_map>
+
+// No need for this to be inside the class - scoped enum is much better and can be forward-declared if necessary.
+enum class PowerUpType : uint32_t
+{
+	WEAPON,
+	ARMOUR,
+	HEALTH
+};
 
 class PowerUp
 {
 public:
-    PowerUp(const char* name, Vertex position)
-    {
-        mPosition = position;
-        mName = new char [strlen(name)];
-        strcpy(mName, name);
-    }
+    PowerUp(const char* name, Vertex position, PowerUpType powerUpType)
+	: mName(name)
+    , mPosition(position)
+	, mType(powerUpType)
+    {}
 
-    ~PowerUp()
-    {
-        delete mName;
-    }
+	virtual ~PowerUp() = default;
 
-    enum PowerUpType
+    [[nodiscard]] PowerUpType GetPowerUpType() const
     {
-        WEAPON,
-        ARMOUR, 
-        HEALTH
+        return mType;
     };
 
-    PowerUpType GetPowerUpType() const
+	[[nodiscard]] const Vertex& GetPosition() const
     {
-        return(mType);
-    };
-
-    const Vertex& GetPosition() const
-    {
-        return(mPosition);
+        return mPosition;
     }
 
 protected:
+	std::string mName;
     Vertex      mPosition;
     PowerUpType mType;
-    char*       mName;
 };
 
 #endif // POWER_UP_H

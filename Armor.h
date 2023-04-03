@@ -3,38 +3,27 @@
 
 #include "PowerUp.h"
 
-#include <stddef.h>
-#include <string.h>
-
 class Armor : public PowerUp
 {
 public:
-    Armor(const char* name, const Vertex& position) :
-        PowerUp(name, position)
+    Armor(const char* name, const Vertex& position)
+	: PowerUp(name, position, PowerUpType::ARMOUR)
+    {}
+
+    virtual ~Armor() = default;
+
+    [[nodiscard]] const char* GetClanTag() const
     {
-        mType = ARMOUR;
-        mClanTag = NULL;
+        return mClanTag.c_str();
     }
 
-    ~Armor()
+    void SetClanTag(const char* n)
     {
-        delete mClanTag;
-    }
-
-    const char* GetClanTag() const
-    {
-        return(mClanTag);
-    }
-
-    void SetClanTag(char* n)
-    {
-        delete mClanTag;
-        mClanTag = new char[strlen(n)];
-        strcpy(mClanTag, n);
+		mClanTag.assign(n ? n : "");
     }
 
 protected:
-    char* mClanTag;
+    std::string mClanTag;
 };
 
 #endif // ARMOUR_H

@@ -6,11 +6,11 @@
 class Weapon : public PowerUp
 {
 public:
-    Weapon(const char* name, Vertex position) :
-        PowerUp(name, position)
-    {
-        mType = WEAPON;
-    }
+    Weapon(const char* name, Vertex position)
+	: PowerUp(name, position, PowerUpType::WEAPON)
+    {}
+
+	virtual ~Weapon() = default;
 };
 
 #endif // WEAPON_H

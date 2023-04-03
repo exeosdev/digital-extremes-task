@@ -5,70 +5,70 @@
 
 #include <vector>
 #include <algorithm>
+#include <memory>
+#include <string>
 
 class PathNode;
-typedef std::vector<PathNode*> PathNodes;
+using PathNodePtr = std::unique_ptr<PathNode>;
 
 class PowerUp;
-typedef std::vector<PowerUp*> PowerUps;
+using PowerUptr = std::unique_ptr<PowerUp>;
+
+// These two manage the actual nodes and links, i.e. serve as a storage.
+// The ownership semantic is unique - no one should acquire these objects
+// in a persistent manner.
+using PathNodes = std::vector<PathNodePtr>;
+using PowerUps = std::vector<PowerUptr>;
+
+using PathNodeRefs = std::vector<PathNode *>;
+using PowerUpRefs = std::vector<PowerUp *>;
 
 class PathNode
 {
 public:
-    PathNode(const char* name, Vertex position) :
-        mPosition(position)
+    PathNode(const char* name, Vertex position);
+    ~PathNode();
+
+    void AddLink(PathNode *pathNode);
+    void RemoveLink(PathNode *pathNode);
+    void AddPowerUp(PowerUp *powerUp);
+    void RemovePowerUp(PowerUp *powerUp);
+
+    [[nodiscard]] const char* GetName() const
     {
-        mName = new char [strlen(name)];
-        strcpy(mName, name);
-    }
-    
-    ~PathNode()
-    {
+        return mName.c_str();
     }
 
-    void AddLink(PathNode *pathNode)
+	[[nodiscard]] const PathNodeRefs& GetLinks() const
     {
-        mLinks.push_back(pathNode);
-    }
-    
-    void RemoveLink(PathNode *pathNode)
-    {
-        PathNodes::iterator i = std::find(mLinks.begin(), mLinks.end(), pathNode);
-        mLinks.erase(i);
+        return mLinks;
     }
 
-    void AddPowerUp(PowerUp *powerUp)
+	[[nodiscard]] const PowerUpRefs& GetPowerUps() const
     {
-        mPowerUps.push_back(powerUp);
-    }
-    
-    void RemovePowerUp(PowerUp *powerUp)
-    {
-        PowerUps::iterator i = std::find(mPowerUps.begin(), mPowerUps.end(), powerUp);
-        mPowerUps.erase(i);
-    }
-
-    const char* GetName() const
-    {
-        return(mName);
-    }
-
-    const PathNodes& GetLinks() const
-    {
-        return(mLinks);
-    }
-
-    const PowerUps& GetPowerUps() const
-    {
-        return(mPowerUps); 
+        return mPowerUps;
     }
 
 protected:
-    Vertex      mPosition;
-    char*       mName;
-
-    PathNodes   mLinks;
-    PowerUps    mPowerUps;
+    Vertex       mPosition;
+    std::string  mName;
+	PathNodeRefs mLinks;
+	PowerUpRefs  mPowerUps;
 };
+
+// For this example, all links are symmetric.
+inline void LinkNodes(PathNode *n1, PathNode *n2)
+{
+	n1->AddLink(n2);
+	n2->AddLink(n1);
+}
+
+// A proxy for linking uptrs instead of plain pointers.
+// LinkNodes() was supposed to stay the same, but no one told anything about overloading it :)
+inline void LinkNodes(PathNodePtr &n1, PathNodePtr &n2)
+{
+	n1->AddLink(n2.get());
+	n2->AddLink(n1.get());
+}
 
 #endif // PATH_NODE_H
