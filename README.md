@@ -15,6 +15,7 @@ This is my solution for the programming task I've received couple days ago. Sinc
 - I used unordered_set for marking nodes traversal because of its (ideally) O(1) complexity. I used pointers directly as keys, which is another performance-friendly thing (no complex hashing involved).
 - The markup table (a mentioned set) grows of course as we traverse the graph so there is an O(n) memory footprint involved.
 - I kept the original test (but enclosed in local scope) and added few extra ones to test some cases I thought could be tricky.
+- One thing I was not sure about: even though PowerUps are attached to nodes, they also have position specified separately from their nodes. That gave me the confidence, that there is also a distance between a node and its PUs. Hence, I included that distance when computing the path length. If this should not be done (I couldn't get it from the specification clearly), there is a: const auto useNodeToPowerUpLocalDistanceToo set to true. When switched to false, only nodes' positions is taken into account.
 
 I hope you enjoy looking at it!
 
